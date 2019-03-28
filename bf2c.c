@@ -180,6 +180,8 @@ void transrate(FILE*out, FILE* in) {
     fputs("#include <stdio.h>\n", out);
     fputs("#include <stdlib.h>\n", out);
     fputs("#include <getopt.h>\n", out);
+    fputs("#include <string.h>\n", out);
+    fputs("#include <unistd.h>\n", out);
 
     if (target_version != NULL) {
         fputs("static char* VERSION = \"", out);
@@ -360,6 +362,10 @@ void transrate(FILE*out, FILE* in) {
     fputs("  if (input_path != NULL\n"
           "      && strcmp(input_path, \"-\") != 0) {\n"
           "    FILE* in = fopen(input_path, \"r\");\n"
+          "    if(in==NULL){\n"
+          "      perror(\"fopen()\");\n"
+          "      exit(1);\n"
+          "    }\n"
           "    int rc = dup2(fileno(in), 0);\n"
           "    if(rc==-1){\n"
           "      perror(\"dup2(in)\");\n"
