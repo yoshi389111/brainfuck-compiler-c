@@ -8,8 +8,8 @@ bf2c: bf2c.c
 	gcc -O2 -o bf2c bf2c.c
 
 test: my_number_validator
-	[ "true" == "$$(./my_number_validator 123456789018)" ]
-	[ "false" == "$$(./my_number_validator 123456789017)" ]
+	bash -c '[ "true" == "$$(./my_number_validator 123456789018)" ]'
+	bash -c '[ "false" == "$$(./my_number_validator 123456789017)" ]'
 
 my_number_validator: my_number_validator.c
 	gcc -O2 -o my_number_validator my_number_validator.c
