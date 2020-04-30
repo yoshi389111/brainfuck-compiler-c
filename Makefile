@@ -2,7 +2,7 @@
 all: bf2c test
 
 clean:
-	rm bf2c my_number_validator my_number_validator.c
+	rm -f bf2c my_number_validator my_number_validator.c
 
 bf2c: bf2c.c
 	gcc -O2 -o bf2c bf2c.c
