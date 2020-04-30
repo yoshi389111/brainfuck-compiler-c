@@ -14,7 +14,7 @@ make
 
 ## 使用方法
 
-brainfuck のソースが `XXXXX.bf` とした場合、以下のようにします。
+brainfuck のソースを `XXXXX.bf` とした場合、以下のようにします。
 
 ```shell-session
 ./bf2c -o XXXXX.c XXXXX.bf
@@ -40,6 +40,8 @@ gcc -O2 -o XXXXX XXXXX.c
 * `-V` or `--version-string` : バージョン情報を指定します
 * `-v` or `--version` : コンパイラのバージョンを表示します
 * `-h` or `--help` : ヘルプメッセージを表示します
+
+`-V` でバージョン情報を指定しなかった場合には、ソースファイル名、現在日付、ログイン名などをもとにデフォルトの情報を埋め込みます。ログイン名は環境変数を `LOGNAME` `USER` `LNAME` `USERNAME` の順序でチェックして、最初の空ではない文字列が設定されていたものを使います（チェックする環境変数は python の `getpass.getuser()` を参考にしています）。もし、なにも設定されていない場合には `"noname"` を使います。
 
 ## コンパイルした実行コマンドの使い方
 

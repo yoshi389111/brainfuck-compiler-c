@@ -1,5 +1,5 @@
 // brainf*ck to c-lang translator
-// 2018-04-24 - 2018-05-23
+// 2018-04-24 - 2020-04-30
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include <libgen.h>
 #include <time.h>
 
-static char* VERSION = "@(#) $Id: bf2c.c 0.1.1 2018-05-23 22:31 yoshi Exp $";
+static char* VERSION = "@(#) $Id: bf2c.c 0.1.2 2020-04-30 19:41 yoshi Exp $";
 static char* USAGE_MESSAGE = "Usage: bf2c [options] source.bf\n"
     "Options:\n"
     "  -o, --output <file>       : output file(c-source)\n"
@@ -98,10 +98,27 @@ char* create_version_info(char* input_path) {
         exit(1);
     }
 
+    char* user_name = getenv("LOGNAME");
+    if (user_name == NULL) {
+        user_name = getenv("USER");
+    }
+    if (user_name == NULL) {
+        user_name = getenv("LNAME");
+    }
+    if (user_name == NULL) {
+        user_name = getenv("USERNAME");
+    }
+    if (user_name == NULL) {
+        user_name = "noname";
+    }
+
     char* version_info = (char*) malloc(
-        strlen(base_name) + strlen(time_stamp) + 40);
-    sprintf(version_info, "@(%c) $%s: %s 0.1 %s noname Exp $",
-        '#', "Id", base_name, time_stamp);
+        strlen(base_name)
+        + strlen(time_stamp)
+        + strlen(user_name)
+        + 40);
+    sprintf(version_info, "@(%c) $%s: %s 0.1.0 %s %s Exp $",
+        '#', "Id", base_name, time_stamp, user_name);
 
     free(input_file);
     return version_info;
