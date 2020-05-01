@@ -19,5 +19,8 @@ clean:
 %.bf: %.py bf_core.py bf_stack.py
 	python3 -B $< > $@
 
-%.c: %.bf
+%.c: %.bf ../bf2c
 	../bf2c -F $<
+
+../bf2c:
+	cd .. ; make

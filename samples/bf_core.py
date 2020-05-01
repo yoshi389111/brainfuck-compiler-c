@@ -91,7 +91,9 @@ def block_of(*statements: str) -> str:
 
 
 def program_of(*statements: str) -> str:
-    return delete_useless_all("".join(statements))
+    source = delete_useless_all("".join(statements))
+    source = re.sub(r'(.{1,72})', "\\1\n", source)
+    return source
 
 
 def move_ptr(pos: int) -> str:
@@ -218,6 +220,14 @@ def copy_data(source: int, destination: int, work1: int) -> str:
         exec_pos(work1, "c"),
         clear_pos(destination),
         for_safe(source, work1, inc_pos(destination)))
+
+
+def override_data(source: int, destination: int) -> str:
+    "1byteの移動."
+    return block_of(
+        clear_pos(destination),
+        move_data(source, destination)
+    )
 
 
 def swap_data(target1: int, target2: int, work1: int) -> str:

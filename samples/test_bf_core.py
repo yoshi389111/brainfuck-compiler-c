@@ -24,6 +24,15 @@ class TestBfCore(unittest.TestCase):
         self.assertEqual(sim.memory[1], 0)
         self.assertEqual(sim.memory[2], 7)
 
+    def test_override_data_1(self):
+        source = c.override_data(1, 2)
+        sim = BfSim(source)
+        sim.memory[1] = 3
+        sim.memory[2] = 4
+        sim.run(10000)
+        self.assertEqual(sim.memory[1], 0)
+        self.assertEqual(sim.memory[2], 3)
+
     def test_copy_data_1(self):
         source = c.copy_data(1, 2, 3)
         sim = BfSim(source)
