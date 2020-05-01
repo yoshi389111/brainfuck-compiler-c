@@ -65,8 +65,8 @@ def julia(columns: int, rows: int) -> str:
 
                     # #12: THRESHOLD2
                     s.push_decimal(THRESHOLD2),
-                    # if size2 >= 4.0
-                    s.if_ge_decimal(
+                    # if size2 > 4.0
+                    s.if_gt_decimal(
                         then_statement=c.block_of(
                             # 発散
 

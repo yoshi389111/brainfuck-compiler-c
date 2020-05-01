@@ -8,8 +8,6 @@ def delete_useless(statement: str) -> str:
     """
     無駄な移動/計算を相殺、削除
 
-    >>> delete_useless("c[c]c")
-    '[]'
     >>> delete_useless("+++--<<>>>")
     '+>'
     >>> delete_useless("---++>><<<")
@@ -19,13 +17,6 @@ def delete_useless(statement: str) -> str:
     >>> delete_useless(">--[-]++[-]")
     '>[-]'
     """
-    # c 命令は、assert (*ptr)==0 みたいな独自拡張.
-    # debug 用途なので、通常は削除する.
-    # 必要な時はコンパイラ/トランスレータに処理を組み込む必要あり
-    if "c" in statement:
-        statement = statement.replace("c", "")
-        # アサーションでなく、ゼロクリアするようにも可能
-        # statement = statement.replace("c", "[-]")
     while True:
         if "<>" in statement:
             # 無駄な移動の相殺・その１
@@ -122,7 +113,8 @@ def exec_pos(pos: int, statement: str) -> str:
     return block_of(
         move_ptr(pos),
         statement,
-        move_ptr(-pos))
+        move_ptr(-pos)
+    )
 
 
 def inc_pos(pos: int) -> str:
@@ -167,10 +159,11 @@ def set_value(pos: int, value: int) -> str:
     (op, value) = ("+", value) if 0 < value else ("-", -value)
     return block_of(
         clear_pos(pos),
-        exec_pos(pos, op * value))
+        exec_pos(pos, op * value)
+    )
 
 
-def while_loop(pos: int, statement: str) -> str:
+def while_loop(pos: int, *statements: str) -> str:
     """
     whileループ.
 
@@ -179,11 +172,12 @@ def while_loop(pos: int, statement: str) -> str:
     """
     return block_of(
         exec_pos(pos, "["),
-        statement,
-        exec_pos(pos, "]"))
+        block_of(*statements),
+        exec_pos(pos, "]")
+    )
 
 
-def for_loop(pos: int, statement: str) -> str:
+def for_loop(pos: int, *statements: str) -> str:
     """
     繰り返し. 破壊版
 
@@ -192,8 +186,9 @@ def for_loop(pos: int, statement: str) -> str:
     """
     return block_of(
         exec_pos(pos, "[-"),
-        statement,
-        exec_pos(pos, "]"))
+        block_of(*statements),
+        exec_pos(pos, "]")
+    )
 
 
 def for_safe(pos: int, work1: int, statement: str) -> str:
@@ -204,9 +199,9 @@ def for_safe(pos: int, work1: int, statement: str) -> str:
     '>>>[->+<<<<+>>>]>[-<+>]<<<<'
     """
     return block_of(
-        exec_pos(work1, "c"),
-        for_loop(pos, inc_pos(work1) + statement),
-        move_data(work1, pos))
+        for_loop(pos, inc_pos(work1), statement),
+        move_data(work1, pos)
+    )
 
 
 def move_data(source: int, destination: int) -> str:
@@ -217,9 +212,9 @@ def move_data(source: int, destination: int) -> str:
 def copy_data(source: int, destination: int, work1: int) -> str:
     "1byteのコピー."
     return block_of(
-        exec_pos(work1, "c"),
         clear_pos(destination),
-        for_safe(source, work1, inc_pos(destination)))
+        for_safe(source, work1, inc_pos(destination))
+    )
 
 
 def override_data(source: int, destination: int) -> str:
@@ -233,10 +228,10 @@ def override_data(source: int, destination: int) -> str:
 def swap_data(target1: int, target2: int, work1: int) -> str:
     "1byte同士の値の入れ替え"
     return block_of(
-        exec_pos(work1, "c"),
         move_data(target1, work1),
         move_data(target2, target1),
-        move_data(work1, target2))
+        move_data(work1, target2)
+    )
 
 
 def _init_value_sub(value: int) -> str:
@@ -285,21 +280,18 @@ def if_nz_then(pos: int, then_statement: str) -> str:
     "if_nz の破壊版. thenのみの簡易版"
     return while_loop(
         pos,
-        block_of(
-            clear_pos(pos),
-            then_statement,
-            exec_pos(pos, "c")))
+        clear_pos(pos),
+        then_statement
+    )
 
 
 def if_one_then(pos: int, then_statement: str) -> str:
     "posの位置が 1 か 0 のどちらが前提. 1 の場合に処理する (破壊版)."
     return while_loop(
         pos,
-        block_of(
-            dec_pos(pos),
-            exec_pos(pos, "c"),
-            then_statement,
-            exec_pos(pos, "c")))
+        dec_pos(pos),
+        then_statement
+    )
 
 
 def if_nz_tricky(
@@ -318,10 +310,6 @@ def if_nz_tricky(
     ※ n == m でもOK
     """
     return block_of(
-        exec_pos(pos + n, "c"),
-        exec_pos(pos + m, "c"),
-        exec_pos(pos + n + m, "c"),
-
         move_ptr(pos),
         inc_pos(n),  # pos+n = else用フラグ
         "[",  # NZ の場合

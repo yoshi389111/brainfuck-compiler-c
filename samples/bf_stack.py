@@ -90,14 +90,10 @@ def override(num: int) -> str:
     "スタックの先頭要素で、スタックの該当要素を上書き. 1<=numであること."
     pos = -ELEMENT_SIZE * (num + 1)
     return c.block_of(
-        c.clear_pos(pos + 3),
-        c.move_data(TOP + 3, pos + 3),
-        c.clear_pos(pos + 2),
-        c.move_data(TOP + 2, pos + 2),
-        c.clear_pos(pos + 1),
-        c.move_data(TOP + 1, pos + 1),
-        c.clear_pos(pos),
-        c.move_data(TOP, pos),
+        c.override_data(TOP + 3, pos + 3),
+        c.override_data(TOP + 2, pos + 2),
+        c.override_data(TOP + 1, pos + 1),
+        c.override_data(TOP + 0, pos + 0),
         c.move_ptr(TOP)
     )
 
@@ -120,10 +116,10 @@ def put_str(message: str) -> str:
     return c.delete_useless(result)
 
 
-def loop_of(*statement: str) -> str:
+def loop_of(*statements: str) -> str:
     "TOPの1byte整数分ループする"
     return c.block_of(
-        c.for_loop(TOP, c.block_of(*statement)),
+        c.for_loop(TOP, *statements),
         c.move_ptr(TOP)
     )
 
@@ -147,7 +143,8 @@ def if_nz(then_statement: str, else_statement: str = "") -> str:
             c.if_one_then(
                 else_flag,
                 else_statement),
-            c.move_ptr(TOP))
+            c.move_ptr(TOP)
+        )
     else:
         return c.block_of(
             c.if_nz_then(
@@ -160,6 +157,14 @@ def if_nz(then_statement: str, else_statement: str = "") -> str:
 def if_z(then_statement: str, else_statement: str = "") -> str:
     "1byteが Z の場合. 終了後スタック先頭は捨てる"
     return if_nz(else_statement, then_statement)
+
+
+def if_eq(value: int, then_statement: str, else_statement: str = "") -> str:
+    return c.block_of(
+        push_byte(value),
+        sub_byte(),
+        if_z(then_statement, else_statement)
+    )
 
 
 def if_nz_decimal(then_statement: str, else_statement: str = "") -> str:
@@ -186,7 +191,6 @@ def if_z_decimal(then_statement: str, else_statement: str = "") -> str:
 
 def if_negative_decimal(then_statement: str, else_statement: str = "") -> str:
     "3byte固定小数点が負数の場合. 終了後スタック先頭は捨てる"
-    # TODO -0.0 対応をしていない
     then_flag = TOP + IDX_DEC
     else_flag = TOP + IDX_INT
     return c.block_of(
@@ -194,10 +198,12 @@ def if_negative_decimal(then_statement: str, else_statement: str = "") -> str:
         c.set_value(else_flag, 1),
         c.if_nz_then(
             TOP + IDX_SGN,
-            c.dec_pos(else_flag) + c.inc_pos(then_flag)),
+            c.dec_pos(else_flag) + c.inc_pos(then_flag)
+        ),
         c.if_one_then(then_flag, then_statement),
         c.if_one_then(else_flag, else_statement),
-        c.move_ptr(TOP))
+        c.move_ptr(TOP)
+    )
 
 
 def add_byte() -> str:
@@ -256,7 +262,8 @@ def _dec_both_abs_decimal() -> str:
     work1 = NOW + 1
     return c.block_of(
         c.copy_data(SECOND + 2, count, work1),
-        c.for_loop(count, c.block_of(
+        c.for_loop(
+            count,
             c.if_z_tricky(
                 TOP + IDX_DEC,
                 ELEMENT_SIZE,  # work2 = NOW + IDX_DEC
@@ -267,7 +274,7 @@ def _dec_both_abs_decimal() -> str:
                     c.dec_pos(TOP + IDX_DEC)
                 )
             )
-        ))
+        )
     )
 
 
@@ -301,14 +308,15 @@ def _if_top_decimal_is_nz_then_override() -> str:
 
 
 def _top_minus_second() -> str:
-    "SECOND+2分、TOPから削除して、SECONDの位置に移動"
+    "SECONDの小数部の分、TOPから減算して、SECONDの位置に移動"
     return c.block_of(
         # 符号を移動(tricky対策で、先に移動)
         c.override_data(TOP + IDX_SGN, SECOND + IDX_SGN),
         # SECONDの小数部だけデクリメント
         c.for_loop(
             SECOND + IDX_DEC,
-            c.dec_data_tricky(TOP + IDX_DEC, 2)),
+            c.dec_data_tricky(TOP + IDX_DEC, 2)
+        ),
         # 結果を SECONDに移動
         c.move_data(TOP + IDX_DEC, SECOND + IDX_DEC),
         c.move_data(TOP + IDX_INT, SECOND + IDX_INT)
@@ -435,3 +443,14 @@ def if_lt_decimal(then_statement: str, else_statement: str = "") -> str:
 
 def if_ge_decimal(then_statement: str, else_statement: str = "") -> str:
     return if_lt_decimal(else_statement, then_statement)
+
+
+def if_gt_decimal(then_statement: str, else_statement: str = "") -> str:
+    return c.block_of(
+        swap(1),
+        if_lt_decimal(then_statement, else_statement)
+    )
+
+
+def if_le_decimal(then_statement: str, else_statement: str = "") -> str:
+    return if_gt_decimal(else_statement, then_statement)

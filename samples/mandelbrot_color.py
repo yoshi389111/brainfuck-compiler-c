@@ -64,8 +64,8 @@ def mandelbrot(columns: int, rows: int) -> str:
 
                     # #14: THRESHOLD2
                     s.push_decimal(THRESHOLD2),
-                    # if size2 >= 4.0
-                    s.if_ge_decimal(
+                    # if size2 > 4.0
+                    s.if_gt_decimal(
                         then_statement=c.block_of(
                             # 発散
 
@@ -107,7 +107,8 @@ def mandelbrot(columns: int, rows: int) -> str:
                             # #18: 0(zx_next == zx) or 1(zx_next != zx)
                             s.if_nz_decimal(
                                 s.push_byte(1) + s.swap(1),
-                                s.push_byte(0) + s.swap(1)),
+                                s.push_byte(0) + s.swap(1)
+                            ),
                             # #17: 0(zx_next == zx && zy_next == zy) or other
                             s.add_byte(),
                             s.if_z(
@@ -142,29 +143,17 @@ def mandelbrot(columns: int, rows: int) -> str:
                 s.drop(),  # drop count
                 # 色対応
                 s.dup(0),
-                s.push_byte(ord('A')),
-                s.sub_byte(),
-                s.if_z(s.put_str("\x1b[31m")),
+                s.if_eq(ord('A'), s.put_str("\x1b[31m")),
                 s.dup(0),
-                s.push_byte(ord('B')),
-                s.sub_byte(),
-                s.if_z(s.put_str("\x1b[32m")),
+                s.if_eq(ord('B'), s.put_str("\x1b[32m")),
                 s.dup(0),
-                s.push_byte(ord('C')),
-                s.sub_byte(),
-                s.if_z(s.put_str("\x1b[33m")),
+                s.if_eq(ord('C'), s.put_str("\x1b[33m")),
                 s.dup(0),
-                s.push_byte(ord('D')),
-                s.sub_byte(),
-                s.if_z(s.put_str("\x1b[34m")),
+                s.if_eq(ord('D'), s.put_str("\x1b[34m")),
                 s.dup(0),
-                s.push_byte(ord('E')),
-                s.sub_byte(),
-                s.if_z(s.put_str("\x1b[35m")),
+                s.if_eq(ord('E'), s.put_str("\x1b[35m")),
                 s.dup(0),
-                s.push_byte(ord('F')),
-                s.sub_byte(),
-                s.if_z(then_statement=s.put_str("\x1b[36m")),
+                s.if_eq(ord('F'), s.put_str("\x1b[36m")),
                 # 色の対応ここまで
                 s.put_char(),  # putchar(ch)
                 # 色をリセット
