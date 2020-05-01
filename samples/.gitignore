@@ -142,3 +142,4 @@ cython_debug/
 mandelbrot
 mandelbrot_color
 julia
+julia_color

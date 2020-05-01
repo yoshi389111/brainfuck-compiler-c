@@ -11,6 +11,9 @@ mandelbrot_color: mandelbrot_color.c
 julia: julia.c
 	gcc -O2 -o $@ $<
 
+julia_color: julia_color.c
+	gcc -O2 -o $@ $<
+
 test:
 	python3 -m mypy *.py
 	python3 -m doctest *.py
