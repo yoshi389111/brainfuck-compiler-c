@@ -110,6 +110,16 @@ def put_char() -> str:
     )
 
 
+def put_str(message: str) -> str:
+    result = c.clear_pos(NOW)
+    for ch in message:
+        result += c.init_value(NOW, ord(ch))
+        # TODO ↑前の値との差分のほうが短いかどうかチェックしたほうが良い
+        result += c.exec_pos(NOW, ".")
+        result += c.clear_pos(NOW)
+    return c.delete_useless(result)
+
+
 def loop_of(*statement: str) -> str:
     "TOPの1byte整数分ループする"
     return c.block_of(
@@ -194,6 +204,14 @@ def add_byte() -> str:
     "1byteの加算"
     return c.block_of(
         c.for_loop(SECOND, c.inc_pos(TOP + IDX_BYTE)),
+        override(1)
+    )
+
+
+def sub_byte() -> str:
+    "1byteの減算"
+    return c.block_of(
+        c.for_loop(SECOND, c.dec_pos(TOP + IDX_BYTE)),
         override(1)
     )
 

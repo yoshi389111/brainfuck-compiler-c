@@ -140,4 +140,5 @@ cython_debug/
 # intermedia/generated files
 *.c
 mandelbrot
+mandelbrot_color
 julia

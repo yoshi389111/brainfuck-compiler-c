@@ -3,10 +3,13 @@ all: mandelbrot
 	time ./mandelbrot
 
 mandelbrot: mandelbrot.c
-	gcc -O2 -o mandelbrot mandelbrot.c
+	gcc -O2 -o $@ $<
+
+mandelbrot_color: mandelbrot_color.c
+	gcc -O2 -o $@ $<
 
 julia: julia.c
-	gcc -O2 -o julia julia.c
+	gcc -O2 -o $@ $<
 
 test:
 	python3 -m mypy *.py
