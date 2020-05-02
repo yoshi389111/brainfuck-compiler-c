@@ -1,5 +1,5 @@
 // brainf*ck to c-lang translator
-// 2018-04-24 - 2020-04-30
+// 2018-04-24 - 2020-05-02
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include <libgen.h>
 #include <time.h>
 
-static char* VERSION = "@(#) $Id: bf2c.c 0.1.2 2020-04-30 19:41 yoshi Exp $";
+static char* VERSION = "@(#) $Id: bf2c.c 0.1.3 2020-05-02 19:41 yoshi Exp $";
 static char* USAGE_MESSAGE = "Usage: bf2c [options] source.bf\n"
     "Options:\n"
     "  -o, --output <file>       : output file(c-source)\n"
@@ -17,9 +17,9 @@ static char* USAGE_MESSAGE = "Usage: bf2c [options] source.bf\n"
     "  -I, --inupt-default       : default param is input-file\n"
     "  -M, --message-default     : default param is message-string\n"
     "  -s, --size <number>       : array size (default:30000)\n"
-    "  -1, --cell-char           : cell size is 8 bit (default)\n"
-    "  -2, --cell-short          : cell size is 16 bit\n"
-    "  -4, --cell-int            : cell size is 32 bit\n"
+    "  -1, --cell-char           : cell size is char (default)\n"
+    "  -2, --cell-short          : cell size is short\n"
+    "  -4, --cell-int            : cell size is int\n"
     "  -z, --eof-zero            : EOF is zero by getchar\n"
     "  -m, --eof-minus           : EOF is -1 by getchar (default)\n"
     "  -n, --eof-no-effect       : EOF is no effect by getchar\n"
@@ -139,8 +139,8 @@ int options(int argc, char**argv) {
         case 's':
             array_size = atoi(optarg);
             if (array_size < 1) {
-                printf("%s: invalid argument. -s or --size\n", argv[0]);
-                show_help = 2;
+                fprintf(stderr, "%s: invalid argument. -s or --size\n", argv[0]);
+                show_help |= 2;
             }
             break;
         case 'V': target_version = optarg; break;
@@ -155,7 +155,7 @@ int options(int argc, char**argv) {
         case 'z': eof_kind = EOF_ZERO; break;
         case 'm': eof_kind = EOF_MINUS; break;
         case 'n': eof_kind = EOF_NO_EFFECT; break;
-        default: show_help=2; break;
+        default: show_help |= 2; break;
         }
     }
 
@@ -212,12 +212,12 @@ void transrate(FILE*out, FILE* in) {
 
     fputs("int getchar2();\n", out);
     fputs("int options(int argc, char**argv);\n", out);
-
+    fprintf(out, "static int array_size = %d;\n", array_size);
     fputs("int main(int argc, char**argv) {\n", out);
     fputs("  int idx = options(argc, argv);\n", out);
     fputs("  int ch;\n", out);
-    fprintf(out, "  %s* buff = calloc(%d, sizeof(%s));\n",
-        cell_type, array_size, cell_type);
+    fprintf(out, "  %s* buff = calloc(array_size, sizeof(%s));\n",
+        cell_type, cell_type);
     fprintf(out, "  %s* ptr = buff;\n", cell_type);
 
     int enable_input = 0;
@@ -286,7 +286,8 @@ void transrate(FILE*out, FILE* in) {
     // options, usage message
     fputs("struct option longopts[] = {\n"
           "  { \"help\", no_argument, NULL, 'h' },\n"
-          "  { \"version\", no_argument, NULL, 'v' },\n", out);
+          "  { \"version\", no_argument, NULL, 'v' },\n"
+          "  { \"size\", required_argument, NULL, 's' },\n", out);
     if (enable_input) {
         fputs(
           "  { \"file\", required_argument, NULL, 'f' },\n"
@@ -303,7 +304,7 @@ void transrate(FILE*out, FILE* in) {
           "  char* input_path=NULL;\n"
           "  char* output_path=NULL;\n"
           "  int opt,longindex,show_help=0;\n"
-          "  while((opt=getopt_long(argc, argv,\"hv\"", out);
+          "  while((opt=getopt_long(argc, argv,\"hvs:\"", out);
     if (enable_input) {
         fputs(" \"f:m:\"", out);
     }
@@ -314,10 +315,17 @@ void transrate(FILE*out, FILE* in) {
           "    switch(opt) {\n"
           "    case 'h':\n"
           "    case 'v': show_help|=1; break;\n"
+          "    case 's':\n"
+          "      array_size = atoi(optarg);\n"
+          "       if (array_size < 1) {\n"
+          "         fprintf(stderr, \"%s: invalid argument. -s or --size\\n\", argv[0]);\n"
+          "         show_help |= 2;\n"
+          "       }\n"
+          "       break;\n"
           "    case 'f': input_path=optarg; message=NULL; break;\n"
           "    case 'm': input_path=NULL; message=optarg; break;\n"
           "    case 'o': output_path=optarg; break;\n"
-          "    default: show_help=2; break;\n"
+          "    default: show_help |= 2; break;\n"
           "    }\n"
           "  }\n", out);
 
@@ -369,6 +377,9 @@ void transrate(FILE*out, FILE* in) {
     }
     fputs("    puts(\"  -v, --version       : display version information.\");\n"
           "    puts(\"  -h, --help          : display help message.\");\n", out);
+    fprintf(out,
+          "    puts(\"  -s, --size <number> : array size (default:%d)\");\n",
+          array_size);
     fputs("    exit(show_help==1 ? 0 : 1);\n"
           "  }\n", out);
 
