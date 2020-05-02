@@ -30,7 +30,7 @@ gcc -O2 -o XXXXX XXXXX.c
 * `-I` or `--input-default` : 実行コマンドのデフォルト引数を入力パスとします
 * `-M` or `--message-default` : 実行コマンドのデフォルト引数をメッセージとします
 * `-s` or `--size` : メモリ配列の数を指定します(デフォルト 30000)
-* `-1` or `--cell-chear` : メモリ配列を byte の配列とします(デフォルト)
+* `-1` or `--cell-chear` : メモリ配列を char の配列とします(デフォルト)
 * `-2` or `--cell-short` : メモリ配列を short の配列とします
 * `-4` or `--cell-int` : メモリ配列を int の配列とします
 * `-z` or `--eof-zero` : EOF を 0 とします
