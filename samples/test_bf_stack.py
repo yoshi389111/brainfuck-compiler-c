@@ -7,6 +7,51 @@ from bf_sim import BfSim
 
 class TestMandelbrot(unittest.TestCase):
 
+    def getByte(self, sim: BfSim, pos: int) -> int:
+        value = sim.memory[pos + s.IDX_BYTE]
+        dmy1 = sim.memory[pos + s.IDX_DMY1]
+        if (dmy1 != 0):
+            raise ValueError(f"dmy1={dmy1}")
+        dmy2 = sim.memory[pos + s.IDX_DMY2]
+        if (dmy2 != 0):
+            raise ValueError(f"dmy2={dmy2}")
+        dmy3 = sim.memory[pos + s.IDX_DMY3]
+        if (dmy3 != 0):
+            raise ValueError(f"dmy3={dmy3}")
+        return value
+
+    def test_push_byte_1(self):
+        source = s.push_byte(3)
+        sim = BfSim(source)
+        while not sim.is_stopped():
+            sim.run(10000)
+        self.assertEqual(self.getByte(sim, 0), 3)
+        self.assertEqual(sim.pointer, 4)
+
+    def test_add_byte_1(self):
+        source = c.block_of(
+            s.push_byte(3),
+            s.push_byte(2),
+            s.add_byte()
+        )
+        sim = BfSim(source)
+        while not sim.is_stopped():
+            sim.run(10000)
+        self.assertAlmostEqual(self.getByte(sim, 0), 5)
+        self.assertEqual(sim.pointer, 4)
+
+    def test_sub_byte_1(self):
+        source = c.block_of(
+            s.push_byte(3),
+            s.push_byte(2),
+            s.sub_byte()
+        )
+        sim = BfSim(source)
+        while not sim.is_stopped():
+            sim.run(10000)
+        self.assertAlmostEqual(self.getByte(sim, 0), 1)
+        self.assertEqual(sim.pointer, 4)
+
     def getFloat(self, sim: BfSim, pos: int) -> float:
         dmy = sim.memory[pos + s.IDX_DMY]
         if (dmy != 0):

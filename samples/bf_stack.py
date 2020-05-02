@@ -209,16 +209,16 @@ def if_negative_decimal(then_statement: str, else_statement: str = "") -> str:
 def add_byte() -> str:
     "1byteの加算"
     return c.block_of(
-        c.for_loop(SECOND, c.inc_pos(TOP + IDX_BYTE)),
-        override(1)
+        c.for_loop(TOP + IDX_BYTE, c.inc_pos(SECOND + IDX_BYTE)),
+        c.move_ptr(TOP)
     )
 
 
 def sub_byte() -> str:
     "1byteの減算"
     return c.block_of(
-        c.for_loop(SECOND, c.dec_pos(TOP + IDX_BYTE)),
-        override(1)
+        c.for_loop(TOP + IDX_BYTE, c.dec_pos(SECOND + IDX_BYTE)),
+        c.move_ptr(TOP)
     )
 
 
