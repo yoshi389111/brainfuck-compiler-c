@@ -84,7 +84,6 @@ char* dup_string(char* string) {
 char* create_version_info(char* input_path) {
     char* input_file = dup_string(input_path);
     char* base_name = basename(input_file);
-    char time_stamp[25];
 
     time_t now = time(NULL);
     struct tm *tmp = localtime(&now);
@@ -93,6 +92,7 @@ char* create_version_info(char* input_path) {
         exit(1);
     }
 
+    char time_stamp[sizeof("YYYY-mm-dd HH:MM:SS+hhmm")];
     if (strftime(time_stamp, sizeof(time_stamp), "%F %T%z", tmp) == 0) {
         fprintf(stderr, "error: strftime()");
         exit(1);
@@ -116,9 +116,9 @@ char* create_version_info(char* input_path) {
         strlen(base_name)
         + strlen(time_stamp)
         + strlen(user_name)
-        + 40);
-    sprintf(version_info, "@(%c) $%s: %s 0.1.0 %s %s Exp $",
-        '#', "Id", base_name, time_stamp, user_name);
+        + 30);
+    sprintf(version_info, "@(%c) %cId: %s 0.1.0 %s %s Exp $",
+        '#', '$', base_name, time_stamp, user_name);
 
     free(input_file);
     return version_info;
@@ -200,16 +200,14 @@ void transrate(FILE*out, FILE* in) {
     fputs("#include <string.h>\n", out);
     fputs("#include <unistd.h>\n", out);
 
-    if (target_version != NULL) {
-        fputs("static char* VERSION = \"", out);
-        escape_string(out, target_version);
-        fputs("\";", out);
-    }
+    fputs("static char* VERSION = \"", out);
+    escape_string(out, target_version);
+    fputs("\";\n", out);
 
     if (target_copyright != NULL) {
         fputs("static char* COPYRIGHT = \"", out);
         escape_string(out, target_copyright);
-        fputs("\";", out);
+        fputs("\";\n", out);
     }
 
     fputs("int getchar2();\n", out);
@@ -344,9 +342,7 @@ void transrate(FILE*out, FILE* in) {
           "  }\n", out);
 
     fputs("  if (show_help) {\n", out);
-    if (target_version != NULL) {
-        fputs("    puts(VERSION);\n", out);
-    }
+    fputs("    puts(VERSION);\n", out);
 
     if (target_copyright != NULL) {
         fputs("    puts(COPYRIGHT);\n", out);
