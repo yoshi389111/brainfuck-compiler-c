@@ -155,11 +155,12 @@ def if_nz(then_statement: str, else_statement: str = "") -> str:
 
 
 def if_z(then_statement: str, else_statement: str = "") -> str:
-    "1byteが Z の場合. 終了後スタック先頭は捨てる"
+    "スタック先頭 1byteが Z の場合. 終了後スタック先頭は捨てる"
     return if_nz(else_statement, then_statement)
 
 
 def if_eq(value: int, then_statement: str, else_statement: str = "") -> str:
+    "スタック先頭 1byteが value と等しい場合. 終了後スタック先頭は捨てる"
     return c.block_of(
         push_byte(value),
         sub_byte(),
