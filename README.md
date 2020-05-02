@@ -52,6 +52,7 @@ gcc -O2 -o XXXXX XXXXX.c
 * `-o` or `--output` : 出力ファイル
 * `-v` or `--version` : バージョン情報を表示します
 * `-h` or `--help` : ヘルプメッセージを表示します
+* `-s` or `--size` : メモリ配列の数を指定します(デフォルトはコンパイル時の指定)
 
 ただし、brainfuck のソースファイルに、 `,` コマンドが使われていない場合、入力ファイルおよび入力メッセージのオプションは指定できません。
 
@@ -76,10 +77,10 @@ gcc -O2 -o XXXXX XXXXX.c
 
 
 ```shell-session
-$ ./bf2c -zIo mycat.c -C "MIT License" -V "mycat ver 0.0.0.1" mycat.bf
+$ ./bf2c -zIo mycat.c -C "MIT License" -V "mycat ver 1.0.0" mycat.bf
 $ gcc -O2 -o mycat mycat.c
 $ ./mycat --version
-mycat ver 0.0.0.1
+mycat ver 1.0.0
 MIT License
 Usage:
   ./mycat [options] [ <input-file> ]
@@ -89,6 +90,7 @@ Options:
   -o, --output <file> : output file path.
   -v, --version       : display version information.
   -h, --help          : display help message.
+  -s, --size <number> : array size (default:30000)
 $ ./mycat mycat.bf
 ,[.,]
 ```
