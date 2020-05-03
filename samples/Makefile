@@ -10,10 +10,6 @@ test:
 	python3 -m doctest *.py
 	python3 -m unittest test_*.py
 
-init:
-	# required /usr/bin/python3 and pip
-	python3 -m pip install -r requirements.txt
-
 %.bf: %.py bf_core.py bf_stack.py
 	python3 -B $< > $@
 
@@ -25,3 +21,11 @@ init:
 
 # ../bf2c:
 # 	cd .. ; make
+
+# create virtual environment
+venv:
+	python3 -m venv .venv
+
+# install for development(at venv)
+dev-install:
+	python3 -m pip install -r requirements.txt

@@ -10,5 +10,5 @@
         "--aggressive",
     ],
     "editor.formatOnSave": true,
-    "python.pythonPath": "/usr/bin/python3"
+    "python.pythonPath": ".venv/bin/python3"
 }
