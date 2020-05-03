@@ -1,26 +1,18 @@
+PROGRAMS=mandelbrot mandelbrot_color julia julia_color
 
-all: mandelbrot
-	time ./mandelbrot
+all: $(PROGRAMS:=.bf)
 
-mandelbrot: mandelbrot.c
-	gcc -O2 -o $@ $<
-
-mandelbrot_color: mandelbrot_color.c
-	gcc -O2 -o $@ $<
-
-julia: julia.c
-	gcc -O2 -o $@ $<
-
-julia_color: julia_color.c
-	gcc -O2 -o $@ $<
+clean:
+	rm -f *.c *.bf $(PROGRAMS)
 
 test:
 	python3 -m mypy *.py
 	python3 -m doctest *.py
 	python3 -m unittest test_*.py
 
-clean:
-	rm -f *.c *.bf
+init:
+	# required /usr/bin/python3 and pip
+	python3 -m pip install -r requirements.txt
 
 %.bf: %.py bf_core.py bf_stack.py
 	python3 -B $< > $@
@@ -28,5 +20,8 @@ clean:
 %.c: %.bf ../bf2c
 	../bf2c -F $<
 
-../bf2c:
-	cd .. ; make
+%: %.c
+	gcc -O2 -o $@ $<
+
+# ../bf2c:
+# 	cd .. ; make
