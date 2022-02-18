@@ -1,10 +1,12 @@
 # brainfuck-compiler-c
 
-brainfuck コンパイラです。
+This program is a brainfuck compiler.
 
-厳密にいえば、C 言語へのトランスレータになります。
+To be more precise, it is a translator to the C language.
 
-## build 方法
+* wikipedia: [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck)
+
+## How to build
 
 ```shell-session
 git clone https://github.com/yoshi389111/brainfuck-compiler-c.git
@@ -12,9 +14,9 @@ cd brainfuck-compiler-c
 make
 ```
 
-## 使用方法
+## How to use
 
-brainfuck のソースを `XXXXX.bf` とした場合、以下のようにします。
+If you set the source of brainfuck as `XXXXX.bf`, you can do the following
 
 ```shell-session
 ./bf2c -o XXXXX.c XXXXX.bf
@@ -22,58 +24,60 @@ gcc -O2 -o XXXXX XXXXX.c
 ./XXXXX
 ```
 
-また、bf2c には以下のオプションがあります。
+The following options are also available for `bf2c`.
 
-* `-o` or `--output` : 出力ファイル(Cソース)を指定します
-* `-F` or `--force-flush` : １文字ごとに強制 flush します
-* `-O` or `--output-default` : 実行コマンドのデフォルト引数を出力パスとします
-* `-I` or `--input-default` : 実行コマンドのデフォルト引数を入力パスとします
-* `-M` or `--message-default` : 実行コマンドのデフォルト引数をメッセージとします
-* `-s` or `--size` : メモリ配列の数を指定します(デフォルト 30000)
-* `-1` or `--cell-chear` : メモリ配列を char の配列とします(デフォルト)
-* `-2` or `--cell-short` : メモリ配列を short の配列とします
-* `-4` or `--cell-int` : メモリ配列を int の配列とします
-* `-z` or `--eof-zero` : EOF を 0 とします
-* `-m` or `--eof-minus` : EOF を -1 とします(デフォルト)
-* `-n` or `--eof-no-effect` : EOF は読み込まないようにします
-* `-C` or `--copyright` : 著作権表示、あるいはライセンス表示を指定します
-* `-V` or `--version-string` : バージョン情報を指定します
-* `-v` or `--version` : コンパイラのバージョンを表示します
-* `-h` or `--help` : ヘルプメッセージを表示します
+* `-o` or `--output` : Specify the output file (C source)
+* `-F` or `--force-flush` : Force flush for each character
+* `-O` or `--output-default` : Set the default argument as the output path
+* `-I` or `--input-default` : Set the default argument as the input path
+* `-M` or `--message-default` : Set the default argument as the message
+* `-s` or `--size` : Specify the size of the array (default 30000)
+* `-1` or `--cell-chear` : Set cell size to char of C-Lang (default)
+* `-2` or `--cell-short` : Set cell size to short of C-Lang (default)
+* `-4` or `--cell-int` : Set cell size to int of C-Lang (default)
+* `-z` or `--eof-zero` : If EOF is read, the cell is set to 0
+* `-m` or `--eof-minus` : If EOF is read, the cell is set to -1 (default)
+* `-n` or `--eof-no-effect` : If EOF is read, no effect
+* `-C` or `--copyright` : Specify a copyright or license notice
+* `-V` or `--version-string` : Specify the version information
+* `-v` or `--version` : Displays the version
+* `-h` or `--help` : Displays help messages
 
-`-V` でバージョン情報を指定しなかった場合には、ソースファイル名、現在日付、ログイン名などをもとにデフォルトの情報を埋め込みます。ログイン名は環境変数を `LOGNAME` `USER` `LNAME` `USERNAME` の順序でチェックして、最初の空ではない文字列が設定されていたものを使います（チェックする環境変数は python の `getpass.getuser()` を参考にしています）。もし、なにも設定されていない場合には `"noname"` を使います。
+If you do not specify the version information with `-V`, it will embed the default information based on the source file name, current date, and login name.
+For the login name, we check the environment variables in the order `LOGNAME` `USER` `LNAME` `USERNAME` and use the first non-empty string set (the environment variables to check are based on python's `getpass.getuser()`).
+If nothing is set, use `"noname"`.
 
-## コンパイルした実行コマンドの使い方
+##  How to use the compiled execution command
 
-コンパイルした実行コマンドは以下のオプションを受け付けます
+The compiled executable command accepts the following options.
 
-* `-f` or `--file` : 入力ファイル
-* `-m` or `--message` : 入力メッセージ
-* `-o` or `--output` : 出力ファイル
-* `-v` or `--version` : バージョン情報を表示します
-* `-h` or `--help` : ヘルプメッセージを表示します
-* `-s` or `--size` : メモリ配列の数を指定します(デフォルトはコンパイル時の指定)
+* `-f` or `--file` : Specify the input file
+* `-m` or `--message` : Specify the input message
+* `-o` or `--output` : Specify the output file
+* `-v` or `--version` : Displays the version
+* `-h` or `--help` : Displays help messages
+* `-s` or `--size` : Specify the size of the array (defaults to compile-time specification)
 
-ただし、brainfuck のソースファイルに、 `,` コマンドが使われていない場合、入力ファイルおよび入力メッセージのオプションは指定できません。
+However, if the `,` command is not used in the source file of brainfuck, the input file and input message options cannot be specified.
 
-同様に、 `.` コマンドが使われていない場合、出力ファイルのオプションは指定できません。
+Similarly, if the `.` command is not used, no options for the output file can be specified.
 
-また、バージョン情報とヘルプメッセージは同じ表示になります。
+Also, the version information and help messages will be displayed the same.
 
-入力ファイル、入力メッセージが指定されていない場合には、標準入力から読み込みます。
-同様に、出力ファイルが指定されていない場合には、標準出力に書き込みます。
+If no input file or input message is specified, it reads from STDIN.
+Similarly, if no output file is specified, it writes to the STDOUT.
 
-コンパイル時に実行コマンドのデフォルト引数を指定していた場合( `-I` or `-M` or `-O` )には、１つだけオプションなしで引数を指定可能です。
+If the default argument for the execution command was specified at compile time (`-I` or `-M` or `-O`), only one argument can be specified without options.
 
-## 使用例
+## Example of use
 
-`cat` コマンド相当のソースをコンパイルしてみます。
+Try to compile the source equivalent of the `cat` command.
 
 ```brainfuck:mycat.bf
 ,[.,]
 ```
 
-この場合、EOF を 0 にする必要があるので以下のようにコンパイル、実行します。
+In this case, EOF needs to be set to 0, so compile and run as follows.
 
 
 ```shell-session
