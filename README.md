@@ -26,22 +26,22 @@ gcc -O2 -o XXXXX XXXXX.c
 
 The following options are also available for `bf2c`.
 
-* `-o` or `--output` : Specify the output file (C source)
-* `-F` or `--force-flush` : Force flush for each character
-* `-O` or `--output-default` : Set the default argument as the output path
-* `-I` or `--input-default` : Set the default argument as the input path
-* `-M` or `--message-default` : Set the default argument as the message
-* `-s` or `--size` : Specify the size of the array (default 30000)
-* `-1` or `--cell-chear` : Set cell size to char of C-Lang (default)
-* `-2` or `--cell-short` : Set cell size to short of C-Lang (default)
-* `-4` or `--cell-int` : Set cell size to int of C-Lang (default)
-* `-z` or `--eof-zero` : If EOF is read, the cell is set to 0
-* `-m` or `--eof-minus` : If EOF is read, the cell is set to -1 (default)
-* `-n` or `--eof-no-effect` : If EOF is read, no effect
-* `-C` or `--copyright` : Specify a copyright or license notice
-* `-V` or `--version-string` : Specify the version information
-* `-v` or `--version` : Displays the version
-* `-h` or `--help` : Displays help messages
+* `-o` or `--output` `<file>`        : output file(C-source)
+* `-F` or `--force-flush`            : force flush
+* `-O` or `--output-default`         : default param is output-file
+* `-I` or `--input-default`          : default param is input-file
+* `-M` or `--message-default`        : default param is message-string
+* `-s` or `--size` `<number>`        : array size (default:30000)
+* `-1` or `--cell-chear`             : cell size is char of C-Lang (default)
+* `-2` or `--cell-short`             : cell size is short of C-Lang (default)
+* `-4` or `--cell-int`               : cell size is int of C-Lang (default)
+* `-z` or `--eof-zero`               : EOF is zero by getchar
+* `-m` or `--eof-minus`              : EOF is -1 by getchar (default)
+* `-n` or `--eof-no-effect`          : EOF is no effect by getchar
+* `-C` or `--copyright` `<str>`      : copyright / license message
+* `-V` or `--version-string` `<str>` : version information message
+* `-v` or `--version`                : displays version information
+* `-h` or `--help`                   : displays help information
 
 If you do not specify the version information with `-V`, it will embed the default information based on the source file name, current date, and login name.
 For the login name, we check the environment variables in the order `LOGNAME` `USER` `LNAME` `USERNAME` and use the first non-empty string set (the environment variables to check are based on python's `getpass.getuser()`).
@@ -51,12 +51,12 @@ If nothing is set, use `"noname"`.
 
 The compiled executable command accepts the following options.
 
-* `-f` or `--file` : Specify the input file
-* `-m` or `--message` : Specify the input message
-* `-o` or `--output` : Specify the output file
-* `-v` or `--version` : Displays the version
-* `-h` or `--help` : Displays help messages
-* `-s` or `--size` : Specify the size of the array (defaults to compile-time specification)
+* `-f` or `--file` `<file>`   : input file path.
+* `-m` or `--message` `<str>` : input message.
+* `-o` or `--output` `<file>` : output file path.
+* `-v` or `--version`         : displays version information.
+* `-h` or `--help`            : displays help information.
+* `-s` or `--size` `<number>` : array size (defaults to compile-time specification)
 
 However, if the `,` command is not used in the source file of brainfuck, the input file and input message options cannot be specified.
 
