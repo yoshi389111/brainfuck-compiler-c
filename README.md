@@ -1,8 +1,10 @@
 # brainfuck-compiler-c
 
 This program is a brainfuck compiler.
-
 To be more precise, it is a translator to the C language.
+
+This translator is very simple and does not perform any optimization.
+It leaves the optimization to the C compiler.
 
 * wikipedia: [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck)
 
